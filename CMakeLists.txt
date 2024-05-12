@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 2.8.11)
+# SET(CMAKE_CUDA_COMPILER /usr/lib/nvidia-cuda-toolkit/bin/nvcc) ###########
+# set(CMAKE_CUDA_ARCHITECTURES 52 60 61 75 86) ############
+# cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(libvis LANGUAGES C CXX)
 
 

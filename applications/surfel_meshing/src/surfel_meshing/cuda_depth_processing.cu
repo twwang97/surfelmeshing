@@ -248,7 +248,6 @@ void OutlierDepthMapFusionCUDA(
   OutlierDepthMapFusionCUDAKernelParam<count, DepthT> p;
   for (int i = 0; i < kOtherCount; ++ i) {
     p.other_TR_reference[i] = others_TR_reference[i];
-    
     p.other_depths[i] = *other_depths[i];
   }
   
@@ -332,7 +331,42 @@ void OutlierDepthMapFusionCUDA<3, u16>(
     const CUDABuffer_<u16>** other_depths,
     const CUDAMatrix3x4* others_TR_reference,
     CUDABuffer_<u16>* output_depth);
-
+template
+void OutlierDepthMapFusionCUDA<4, u16>( /////////////
+    cudaStream_t stream,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
+template
+void OutlierDepthMapFusionCUDA<2, u16>( ///////////
+    cudaStream_t stream,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
+template
+void OutlierDepthMapFusionCUDA<11, u16>( ///////////
+    cudaStream_t stream,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
 
 template <int count, typename DepthT>
 __global__ void OutlierDepthMapFusionCUDAKernel(
@@ -508,7 +542,45 @@ void OutlierDepthMapFusionCUDA<3, u16>(
     const CUDABuffer_<u16>** other_depths,
     const CUDAMatrix3x4* others_TR_reference,
     CUDABuffer_<u16>* output_depth);
-
+template
+void OutlierDepthMapFusionCUDA<4, u16>( ///////
+    cudaStream_t stream,
+    int required_count,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
+template
+void OutlierDepthMapFusionCUDA<2, u16>( /////////
+    cudaStream_t stream,
+    int required_count,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
+template
+void OutlierDepthMapFusionCUDA<11, u16>( /////////
+    cudaStream_t stream,
+    int required_count,
+    float tolerance,
+    const CUDABuffer_<u16>& input_depth,
+    float depth_fx,
+    float depth_fy,
+    float depth_cx,
+    float depth_cy,
+    const CUDABuffer_<u16>** other_depths,
+    const CUDAMatrix3x4* others_TR_reference,
+    CUDABuffer_<u16>* output_depth);
 
 // TODO: This is potentially faster using a box filter.
 template <int radius, typename DepthT>

@@ -49,8 +49,8 @@ class CUDASurfelReconstruction {
       const PinholeCamera4f& depth_camera,
       cudaGraphicsResource_t vertex_buffer_resource,
       cudaGraphicsResource_t neighbor_index_buffer_resource,
-      cudaGraphicsResource_t normal_vertex_buffer_resource,
-      const shared_ptr<SurfelMeshingRenderWindow>& render_window);
+      cudaGraphicsResource_t normal_vertex_buffer_resource) ;
+      // const shared_ptr<SurfelMeshingRenderWindow>& render_window);
   
   // Destructor.
   ~CUDASurfelReconstruction();
@@ -172,7 +172,7 @@ private:
   cudaGraphicsResource_t vertex_buffer_resource_;
   cudaGraphicsResource_t neighbor_index_buffer_resource_;
   cudaGraphicsResource_t normal_vertex_buffer_resource_;
-  shared_ptr<SurfelMeshingRenderWindow> render_window_;  // for debugging only
+  // shared_ptr<SurfelMeshingRenderWindow> render_window_;  // for debugging only
 };
 
 }

@@ -27,8 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#define LIBVIS_ENABLE_TIMING
-
+#include "surfel_meshing/SurfelMeshingSettings.h" // LIBVIS_ENABLE_TIMING
 #include "surfel_meshing/octree.h"
 
 #include <libvis/logging.h>

@@ -246,7 +246,7 @@ void IntegrateMeasurementsCUDA(
   const float cx_inv_pixel_center = -cx_pixel_center / fx;
   const float cy_inv_pixel_center = -cy_pixel_center / fy;
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -307,7 +307,7 @@ void UpdateNeighborsCUDA(
   const float cx = depth_camera.parameters()[2];
   const float cy = depth_camera.parameters()[3];
   
-  constexpr int kSurfelsBlockWidth = 1024;
+  constexpr int kSurfelsBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kSurfelsBlockWidth));
   dim3 block_dim(kSurfelsBlockWidth);
   
@@ -362,7 +362,7 @@ void RenderMinDepthCUDA(
   const float cx = depth_camera.parameters()[2];
   const float cy = depth_camera.parameters()[3];
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -412,7 +412,7 @@ void AssociateSurfelsCUDA(
   const float cx = depth_camera.parameters()[2];
   const float cy = depth_camera.parameters()[3];
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   

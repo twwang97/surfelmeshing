@@ -66,9 +66,11 @@ class SurfelMeshing {
       float max_triangle_angle,
       float max_neighbor_search_range_increase_factor,
       float long_edge_tolerance_factor,
-      int regularization_frame_window_size,
-      const shared_ptr<SurfelMeshingRenderWindow>& render_window);
+      int regularization_frame_window_size); 
+      // const shared_ptr<SurfelMeshingRenderWindow>& render_window);
   
+  void setWindow(const shared_ptr<SurfelMeshingRenderWindow>& render_window);
+
   // Updates this SurfelMeshing's CPU surfels to the contents of the buffers
   // coming from the CUDA surfels.
   void IntegrateCUDABuffers(
@@ -81,8 +83,8 @@ class SurfelMeshing {
   // Iterates over surfels_to_remesh_ to perform a triangulation iteration.
   void Triangulate(bool force_debug = false);
   
-  // Converts the surfels to a point cloud.
-  void ConvertToPoint3fCloud(Point3fCloud* output);
+  // Converts each position of surfel to a point cloud.
+  void ConvertToPoint3fCloud_position(Point3fCloud* output);
   
   // Outputs the mesh as a Mesh3fCu8. Optionally, only outputs the indices.
   // TODO: indices_only has a hidden side effect wrt. including merged vertices in the indexing, document this (or better: split into two functions)

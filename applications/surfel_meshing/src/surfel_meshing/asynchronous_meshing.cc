@@ -27,10 +27,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#define LIBVIS_ENABLE_TIMING
-
 #include "surfel_meshing/asynchronous_meshing.h"
-
+#include "surfel_meshing/SurfelMeshingSettings.h" // LIBVIS_ENABLE_TIMING
 #include <libvis/timing.h>
 
 #include "surfel_meshing/cuda_surfels_cpu.h"

@@ -139,20 +139,22 @@ bool ReadTUMRGBDDatasetAssociatedAndCalibrated(
     const char* dataset_folder_path,
     const char* trajectory_filename,
     RGBDVideo<ColorT, DepthT>* rgbd_video,
+    bool is_quaternion_to_be_inverted, 
     double max_interpolation_time_extent = numeric_limits<double>::infinity()) {
   rgbd_video->color_frames_mutable()->clear();
   rgbd_video->depth_frames_mutable()->clear();
   
+  // Calibration file: intrinsic camera parameters
   string calibration_path = string(dataset_folder_path) + "/calibration.txt";
   ifstream calibration_file(calibration_path.c_str());
   if (!calibration_file) {
     LOG(ERROR) << "Could not open calibration file: " << calibration_path;
     return false;
   }
-  string line;
-  getline(calibration_file, line);
+  string line_txt;
+  getline(calibration_file, line_txt);
   double fx, fy, cx, cy;
-  if (sscanf(line.c_str(), "%lf %lf %lf %lf",
+  if (sscanf(line_txt.c_str(), "%lf %lf %lf %lf",
       &fx, &fy, &cx, & cy) != 4) {
     LOG(ERROR) << "Cannot read calibration!";
     return false;
@@ -178,6 +180,9 @@ bool ReadTUMRGBDDatasetAssociatedAndCalibrated(
     return false;
   }
   
+  std::string line;
+  usize frame_index = 0; 
+  usize frame_index_pre = 0; 
   while (!associated_file.eof() && !associated_file.bad()) {
     std::getline(associated_file, line);
     if (line.size() == 0 || line[0] == '#') {
@@ -195,6 +200,8 @@ bool ReadTUMRGBDDatasetAssociatedAndCalibrated(
       return false;
     }
     
+    frame_index_pre++; ////////////////
+
     SE3f rgb_global_T_frame;
     double rgb_timestamp = atof(rgb_time_string);
     if (!poses_global_T_frame.empty()) {
@@ -235,7 +242,23 @@ bool ReadTUMRGBDDatasetAssociatedAndCalibrated(
       height = image_ptr->height();
       image_frame->ClearImageAndDerivedData();
     }
-  }
+
+    
+
+    if (is_quaternion_to_be_inverted){
+      SE3f global_T_frame = rgbd_video->color_frame_mutable(frame_index)->global_T_frame();
+      global_T_frame.setQuaternion(global_T_frame.unit_quaternion().inverse());
+      rgbd_video->color_frame_mutable(frame_index)->SetGlobalTFrame(global_T_frame);
+      
+      global_T_frame = rgbd_video->depth_frame_mutable(frame_index)->global_T_frame();
+      global_T_frame.setQuaternion(global_T_frame.unit_quaternion().inverse());
+      rgbd_video->depth_frame_mutable(frame_index)->SetGlobalTFrame(global_T_frame.inverse());
+    }
+    /////////////////////
+    frame_index++; 
+    std::cout << frame_index_pre << ", idx: " << frame_index << ", " << rgbd_video->frame_count() << std::endl; 
+    
+  } // end of reading associated_file
   
   float camera_parameters[4];
   camera_parameters[0] = fx;

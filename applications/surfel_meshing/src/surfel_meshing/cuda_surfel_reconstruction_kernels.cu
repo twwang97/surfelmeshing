@@ -43,7 +43,7 @@
 #include "surfel_meshing/cuda_util.cuh"
 
 // Uncomment this to run CUDA kernels sequentially for debugging.
-// #define CUDA_SEQUENTIAL_CHECKS
+#define CUDA_SEQUENTIAL_CHECKS
 
 namespace vis {
 
@@ -388,7 +388,7 @@ void UpdateSurfelVertexBufferCUDA(
   #endif
   CHECK_CUDA_NO_ERROR();
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -477,7 +477,7 @@ void UpdateNeighborIndexBufferCUDA(
   #endif
   CHECK_CUDA_NO_ERROR();
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -542,7 +542,7 @@ void UpdateNormalVertexBufferCUDA(
   #endif
   CHECK_CUDA_NO_ERROR();
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -981,7 +981,7 @@ __device__ void IntegrateOrConflictSurfel(
   }
 }
 
-__launch_bounds__(/*maxThreadsPerBlock*/ 1024, /*minBlocksPerMultiprocessor*/ 1)
+__launch_bounds__(/*maxThreadsPerBlock*/ CUDA_KERNEL_DIMENSION_, /*minBlocksPerMultiprocessor*/ 1)
 __global__ void IntegrateMeasurementsCUDAKernel(
     u32 frame_index,
     int surfel_integration_active_window_size,
@@ -2344,7 +2344,7 @@ void RegularizeSurfelsCUDA(
     return;
   }
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   
@@ -2447,7 +2447,7 @@ void ExportVerticesCUDA(
     return;
   }
   
-  constexpr int kBlockWidth = 1024;
+  constexpr int kBlockWidth = CUDA_KERNEL_DIMENSION_;
   dim3 grid_dim(GetBlockCount(surfel_count, kBlockWidth));
   dim3 block_dim(kBlockWidth);
   

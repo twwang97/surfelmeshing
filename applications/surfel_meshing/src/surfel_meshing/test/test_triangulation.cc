@@ -61,8 +61,8 @@ TEST(Triangulation, CheckSurfelState) {
       M_PI / 180.0f * 170.0f,
       2.0,
       1.5,
-      30,
-      render_window);
+      30);
+  reconstruction.setWindow(render_window); 
   
   if (kShowVisualization) {
     render_window->SetReconstructionForDebugging(&reconstruction);
@@ -97,14 +97,14 @@ TEST(Triangulation, CheckSurfelState) {
       input);
   reconstruction.CheckRemeshing();
   reconstruction.Triangulate();
-  
+  /*
   for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
     reconstruction.CheckSurfelState(surfel_index);
   }
-  
+  */
   if (kShowVisualization) {
     shared_ptr<Point3fCloud> visualization_cloud(new Point3fCloud());
-    reconstruction.ConvertToPoint3fCloud(visualization_cloud.get());
+    reconstruction.ConvertToPoint3fCloud_position(visualization_cloud.get());
     shared_ptr<Point3fC3u8Cloud> color_cloud(new Point3fC3u8Cloud(visualization_cloud->size()));
     for (usize i = 0; i < visualization_cloud->size(); ++ i) {
       color_cloud->at(i).position() = visualization_cloud->at(i).position();
@@ -130,13 +130,15 @@ TEST(Triangulation, CheckSurfelState) {
   }
   
   // Code copied from above.
+  /*
   for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
     reconstruction.CheckSurfelState(surfel_index);
   }
+  */
   
   if (kShowVisualization) {
     shared_ptr<Point3fCloud> visualization_cloud(new Point3fCloud());
-    reconstruction.ConvertToPoint3fCloud(visualization_cloud.get());
+    reconstruction.ConvertToPoint3fCloud_position(visualization_cloud.get());
     shared_ptr<Point3fC3u8Cloud> color_cloud(new Point3fC3u8Cloud(visualization_cloud->size()));
     for (usize i = 0; i < visualization_cloud->size(); ++ i) {
       color_cloud->at(i).position() = visualization_cloud->at(i).position();

@@ -27,8 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#define LIBVIS_ENABLE_TIMING
-
+#include "surfel_meshing/SurfelMeshingSettings.h" // LIBVIS_ENABLE_TIMING
 #include "surfel_meshing/cuda_surfel_reconstruction.h"
 
 #include <libvis/image_display.h>
@@ -46,16 +45,16 @@ CUDASurfelReconstruction::CUDASurfelReconstruction(
     const PinholeCamera4f& depth_camera,
     cudaGraphicsResource_t vertex_buffer_resource,
     cudaGraphicsResource_t neighbor_index_buffer_resource,
-    cudaGraphicsResource_t normal_vertex_buffer_resource,
-    const shared_ptr<SurfelMeshingRenderWindow>& render_window)
+    cudaGraphicsResource_t normal_vertex_buffer_resource)
+    // const shared_ptr<SurfelMeshingRenderWindow>& render_window)
     : surfel_count_(0),
       merge_count_(0),
       max_surfel_count_(max_surfel_count),
       depth_camera_(depth_camera),
       vertex_buffer_resource_(vertex_buffer_resource),
       neighbor_index_buffer_resource_(neighbor_index_buffer_resource),
-      normal_vertex_buffer_resource_(normal_vertex_buffer_resource),
-      render_window_(render_window) {
+      normal_vertex_buffer_resource_(normal_vertex_buffer_resource){
+      // render_window_(render_window) {
   surfels_.reset(new CUDABuffer<float>(kSurfelAttributeCount, max_surfel_count));
   
   distance_map_.reset(new CUDABuffer<u8>(depth_camera_.height(), depth_camera_.width()));
@@ -348,6 +347,10 @@ void CUDASurfelReconstruction::TransferAllToCPU(
   surfels_->DownloadPartAsync(kSurfelSmoothX * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_x_buffer);
   surfels_->DownloadPartAsync(kSurfelSmoothY * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_y_buffer);
   surfels_->DownloadPartAsync(kSurfelSmoothZ * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_z_buffer);
+  // surfels_->DownloadPartAsync(kSurfelColor * surfels_->ToCUDA().pitch(), 3 * surfel_count_ * sizeof(float), stream, buffer->surfel_rgb_buffer);
+  // surfels_->DownloadPartAsync(kSurfelColorR * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_color_r_buffer);
+  // surfels_->DownloadPartAsync(kSurfelColorG * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_color_g_buffer);
+  // surfels_->DownloadPartAsync(kSurfelColorB * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_color_b_buffer);
   
   surfels_->DownloadPartAsync(kSurfelRadiusSquared * surfels_->ToCUDA().pitch(), surfel_count_ * sizeof(float), stream, buffer->surfel_radius_squared_buffer);
   

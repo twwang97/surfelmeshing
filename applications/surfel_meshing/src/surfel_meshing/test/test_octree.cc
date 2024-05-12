@@ -202,6 +202,7 @@ TEST(CompressedOctree, StructureTestsActive) {
     for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
       surfels.push_back(Surfel(
           10.0f * Vec3f::Random(),
+          Vec3f(255, 255, 255), 
           /*radius_squared*/ 1.0f,
           /*normal*/ Vec3f(1, 0, 0),
           0));
@@ -244,6 +245,7 @@ TEST(CompressedOctree, StructureTestsWithGridPassive) {
       for (usize x = 0; x < kGridSize; ++ x) {
         surfels.push_back(Surfel(
             Vec3f(0.01f * x, 0.1f * y, 1 * z),
+            Vec3f(255, 255, 255),
             /*radius_squared*/ 1.0f,
             /*normal*/ Vec3f(1, 0, 0),
             0));
@@ -313,9 +315,9 @@ TEST(CompressedOctree, StructureTestsWithNastyPointsActiveAndPassive) {
       vector<Surfel> surfels;
       for (usize surfel_index = 0; surfel_index < kBaseSurfelCount; ++ surfel_index) {
         Vec3f base_position = 10.0f * Vec3f::Random();
-        surfels.push_back(Surfel(base_position, /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
+        surfels.push_back(Surfel(base_position, Vec3f(255, 255, 255), /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
         for (unsigned int o = 0; o < sizeof(kOffsets) / sizeof(kOffsets[0]); ++ o) {
-          surfels.push_back(Surfel(base_position + kOffsets[o], /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
+          surfels.push_back(Surfel(base_position + kOffsets[o], Vec3f(255, 255, 255), /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
         }
       }
       
@@ -388,6 +390,7 @@ TEST(CompressedOctree, FindNearestSurfelsWithinRadiusPassive) {
     for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
       surfels.push_back(Surfel(
           10.0f * Vec3f::Random(),
+          Vec3f(255, 255, 255),
           /*radius_squared*/ 1.0f,
           /*normal*/ Vec3f(1, 0, 0),
           0));
@@ -453,6 +456,7 @@ TEST(CompressedOctree, FindNearestSurfelsWithinRadius) {
     for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
       surfels.push_back(Surfel(
           10.0f * Vec3f::Random(),
+          Vec3f(255, 255, 255),
           /*radius_squared*/ 1.0f,
           /*normal*/ Vec3f(1, 0, 0),
           0));
@@ -509,6 +513,7 @@ TEST(CompressedOctree, RemoveAllSurfels) {
     for (usize surfel_index = 0; surfel_index < kSurfelCount; ++ surfel_index) {
       surfels.push_back(Surfel(
           10.0f * Vec3f::Random(),
+          Vec3f(255, 255, 255),
           /*radius_squared*/ 1.0f,
           /*normal*/ Vec3f(1, 0, 0),
           0));
@@ -573,11 +578,12 @@ TEST(CompressedOctree, MoveSurfels) {
       Vec3f base_position = 10.0f * Vec3f::Random();
       surfels.push_back(Surfel(
           base_position,
+          Vec3f(255, 255, 255),
           /*radius_squared*/ 1.0f,
           /*normal*/ Vec3f(1, 0, 0),
           0));
       for (unsigned int o = 0; o < sizeof(kOffsets) / sizeof(kOffsets[0]); ++ o) {
-        surfels.push_back(Surfel(base_position + kOffsets[o], /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
+        surfels.push_back(Surfel(base_position + kOffsets[o], Vec3f(255, 255, 255), /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
       }
     }
     
@@ -703,6 +709,7 @@ TEST(CompressedOctree, AddActiveAndMove) {
     // Add a surfel.
     surfels.push_back(Surfel(
         10.0f * Vec3f::Random(),
+        Vec3f(255, 255, 255),
         /*radius_squared*/ 1.0f,
         /*normal*/ Vec3f(1, 0, 0),
         0));
@@ -811,7 +818,7 @@ TEST(CompressedOctree, AddActiveAndMove) {
 //       octree.AddSurfelActive(surfels.size() - 1, &surfels.back());
 //       
 // //       for (uint o = 0; o < sizeof(kOffsets) / sizeof(kOffsets[0]); ++ o) {
-// //         surfels.push_back(Surfel(base_position + kOffsets[o], Vec3u8(255, 255, 255), /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
+// //         surfels.push_back(Surfel(base_position + kOffsets[o], Vec3u8), /*radius_squared*/ 1.0f, /*normal*/ Vec3f(1, 0, 0), 0));
 // //         octree.AddSurfelActive(surfels.size() - 1, &surfels.back());
 // //       }
 //     }

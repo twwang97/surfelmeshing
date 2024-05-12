@@ -42,6 +42,10 @@ struct CUDASurfelBuffersCPU {
     surfel_x_buffer = new float[max_surfel_count];
     surfel_y_buffer = new float[max_surfel_count];
     surfel_z_buffer = new float[max_surfel_count];
+    // surfel_rgb_buffer = new float[3 * max_surfel_count];
+    // surfel_color_r_buffer = new float[max_surfel_count];
+    // surfel_color_g_buffer = new float[max_surfel_count];
+    // surfel_color_b_buffer = new float[max_surfel_count];
     surfel_radius_squared_buffer = new float[max_surfel_count];
     surfel_normal_x_buffer = new float[max_surfel_count];
     surfel_normal_y_buffer = new float[max_surfel_count];
@@ -53,6 +57,10 @@ struct CUDASurfelBuffersCPU {
     delete[] surfel_x_buffer;
     delete[] surfel_y_buffer;
     delete[] surfel_z_buffer;
+    // delete[] surfel_rgb_buffer;
+    // delete[] surfel_color_r_buffer; 
+    // delete[] surfel_color_g_buffer; 
+    // delete[] surfel_color_b_buffer; 
     delete[] surfel_radius_squared_buffer;
     delete[] surfel_normal_x_buffer;
     delete[] surfel_normal_y_buffer;
@@ -65,6 +73,10 @@ struct CUDASurfelBuffersCPU {
   float* surfel_x_buffer;
   float* surfel_y_buffer;
   float* surfel_z_buffer;
+  // float* surfel_rgb_buffer; 
+  // float* surfel_color_r_buffer;
+  // float* surfel_color_g_buffer;
+  // float* surfel_color_b_buffer;
   float* surfel_radius_squared_buffer;
   float* surfel_normal_x_buffer;
   float* surfel_normal_y_buffer;

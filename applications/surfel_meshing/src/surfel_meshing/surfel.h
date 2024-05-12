@@ -70,9 +70,18 @@ class Surfel {
     kCompleted = 2  // The surfel is completely surrounded by triangles.
   };
   
-  template <typename DerivedA, typename DerivedB>
-  inline Surfel(const MatrixBase<DerivedA>& position, float radius_squared, const MatrixBase<DerivedB>& normal, u32 last_update_stamp)
+  // template <typename DerivedA, typename DerivedB>
+  // inline Surfel(const MatrixBase<DerivedA>& position, float radius_squared, const MatrixBase<DerivedB>& normal, u32 last_update_stamp)
+  //     : position_(position),
+  //       radius_squared_(radius_squared),
+  //       normal_(normal),
+  //       last_update_stamp_(last_update_stamp),
+  //       meshing_state_(MeshingState::kFree) {}
+
+  template <typename DerivedA, typename DerivedB, typename DerivedC>
+  inline Surfel(const MatrixBase<DerivedA>& position, const MatrixBase<DerivedC>& color, float radius_squared, const MatrixBase<DerivedB>& normal, u32 last_update_stamp)
       : position_(position),
+        color_(color),
         radius_squared_(radius_squared),
         normal_(normal),
         last_update_stamp_(last_update_stamp),
@@ -85,6 +94,11 @@ class Surfel {
   template <typename Derived>
   inline void SetPosition(const MatrixBase<Derived>& position) {
     position_ = position;
+  }
+
+  template <typename Derived>
+  inline void SetColor(const MatrixBase<Derived>& color) {
+    color_ = color;
   }
   
   template <typename Derived>
@@ -149,6 +163,7 @@ class Surfel {
   }
   
   inline const Vec3f& position() const { return position_; }
+  inline const Vec3f& color() const { return color_; }
   inline float radius_squared() const { return radius_squared_; }
   inline const Vec3f& normal() const { return normal_; }
   inline OctreeNode* node() const { return node_; }
@@ -164,6 +179,7 @@ class Surfel {
   friend std::ostream& operator<<(std::ostream& os, const Surfel& s);
   
   Vec3f position_;
+  Vec3f color_;
   float radius_squared_;
   Vec3f normal_;
   u32 index_in_node_;

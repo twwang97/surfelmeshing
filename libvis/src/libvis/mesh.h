@@ -108,11 +108,11 @@ class Mesh {
     if (!stream) {
       return false;
     }
-    
+    std::cerr << "start to write 2" << std::endl;  ///////////
     if (vertices_) {
       vertices_->WriteAsOBJ(&stream);
     }
-    
+    std::cerr << "start to write 3" << std::endl;  ///////////
     for (usize i = 0, size = triangles_.size(); i < size; ++ i) {
       const TriangleT& triangle = triangles_[i];
       stream << "f " << (triangle.index(0) + 1)
@@ -120,7 +120,7 @@ class Mesh {
              << " " << (triangle.index(2) + 1)
              << std::endl;
     }
-
+    std::cerr << "start to write 4" << std::endl;  ///////////
     FILE* file = fopen(path, "wb");
     string str = stream.str();
     fwrite(str.c_str(), 1, str.size(), file);

@@ -34,6 +34,8 @@
 #include <libvis/cuda/cuda_buffer.cuh>
 #include <libvis/cuda/cuda_matrix.cuh>
 
+#define CUDA_KERNEL_DIMENSION_ 1024
+
 namespace vis {
 
 // The surfel structure is stored in a large buffer. It is organized
@@ -45,40 +47,84 @@ namespace vis {
 //       For example, the normals could be stored with (much) less precision,
 //       perhaps 10 bit per component to fit into a 32 bit value?
 
-// float attributes:
-constexpr int kSurfelX = 0;
-constexpr int kSurfelY = 1;
-constexpr int kSurfelZ = 2;
-constexpr int kSurfelSmoothX = 3;
-constexpr int kSurfelSmoothY = 4;
-constexpr int kSurfelSmoothZ = 5;
-constexpr int kSurfelConfidence = 6;
-constexpr int kSurfelRadiusSquared = 7;
-constexpr int kSurfelNormalX = 8;
-constexpr int kSurfelNormalY = 9;
-constexpr int kSurfelNormalZ = 10;
-constexpr int kSurfelGradientX = 11;
-constexpr int kSurfelGradientY = 12;
-constexpr int kSurfelGradientZ = 13;
-constexpr int kSurfelAccumX = 14;
-constexpr int kSurfelAccumY = 15;
-constexpr int kSurfelAccumZ = 16;
 
-// u32 attributes:
-constexpr int kSurfelCreationStamp = 17;
-constexpr int kSurfelLastUpdateStamp = 18;
-constexpr int kSurfelNeighbor0 = 19;  // and 20, 21, 22 for the other neighbors.
-// (not an attribute itself):
-constexpr int kSurfelNeighborCount = 4;
-constexpr int kSurfelGradientCount = 23;
+enum kSurfelAttribute
+{
+    // float attributes
+    kSurfelX, 
+    kSurfelY, 
+    kSurfelZ, 
+    kSurfelSmoothX, 
+    kSurfelSmoothY, 
+    kSurfelSmoothZ, 
+    kSurfelColorR, 
+    kSurfelColorG, 
+    kSurfelColorB, 
+    kSurfelConfidence, 
+    kSurfelRadiusSquared, 
+    kSurfelNormalX, 
+    kSurfelNormalY, 
+    kSurfelNormalZ, 
+    kSurfelGradientX, 
+    kSurfelGradientY, 
+    kSurfelGradientZ, 
+    kSurfelAccumX, 
+    kSurfelAccumY, 
+    kSurfelAccumZ, 
 
-// Vec4u8 attributes:
-constexpr int kSurfelColor = 24;  // (r, g, b, neighbor detach request flag)
+    // u32 attributes
+    kSurfelCreationStamp, 
+    kSurfelLastUpdateStamp, 
+    kSurfelNeighbor0, 
+    kSurfelNeighbor1, 
+    kSurfelNeighbor2, 
+    kSurfelNeighbor3, 
 
-constexpr int kSurfelAttributeCount = 25;
+    // (not an attribute itself)
+    kSurfelGradientCount, 
+
+    // Vec4u8 attributes:
+    kSurfelColor,   // (r, g, b, neighbor detach request flag)
+
+    kSurfelAttributeCount, 
+}; 
+
+constexpr int kSurfelNeighborCount = kSurfelNeighbor3 - kSurfelNeighbor0 + 1;
+
+// // float attributes:
+// constexpr int kSurfelX = 0;
+// constexpr int kSurfelY = 1;
+// constexpr int kSurfelZ = 2;
+// constexpr int kSurfelSmoothX = 3;
+// constexpr int kSurfelSmoothY = 4;
+// constexpr int kSurfelSmoothZ = 5;
+// constexpr int kSurfelConfidence = 6;
+// constexpr int kSurfelRadiusSquared = 7;
+// constexpr int kSurfelNormalX = 8;
+// constexpr int kSurfelNormalY = 9;
+// constexpr int kSurfelNormalZ = 10;
+// constexpr int kSurfelGradientX = 11;
+// constexpr int kSurfelGradientY = 12;
+// constexpr int kSurfelGradientZ = 13;
+// constexpr int kSurfelAccumX = 14;
+// constexpr int kSurfelAccumY = 15;
+// constexpr int kSurfelAccumZ = 16;
+
+// // u32 attributes:
+// constexpr int kSurfelCreationStamp = 17;
+// constexpr int kSurfelLastUpdateStamp = 18;
+// constexpr int kSurfelNeighbor0 = 19;  // and 20, 21, 22 for the other neighbors.
+// // (not an attribute itself):
+// constexpr int kSurfelNeighborCount = 4;
+// constexpr int kSurfelGradientCount = 23;
+
+// // Vec4u8 attributes:
+// constexpr int kSurfelColor = 24;  // (r, g, b, neighbor detach request flag)
+
+// constexpr int kSurfelAttributeCount = 25;
 
 
-constexpr int kMergeBlockWidth = 1024;
+constexpr int kMergeBlockWidth = CUDA_KERNEL_DIMENSION_;
 
 
 void CallCreateNewSurfelsCUDASerializingKernel(

@@ -27,8 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#define LIBVIS_ENABLE_TIMING
-
+#include "surfel_meshing/SurfelMeshingSettings.h" // LIBVIS_ENABLE_TIMING
 #include "surfel_meshing/surfel_meshing.h"
 
 #include <libvis/image_display.h>
@@ -154,10 +153,10 @@ SurfelMeshing::SurfelMeshing(
     float max_triangle_angle,
     float max_neighbor_search_range_increase_factor,
     float long_edge_tolerance_factor,
-    int regularization_frame_window_size,
-    const shared_ptr<SurfelMeshingRenderWindow>& render_window)
-    : octree_(max_surfels_per_node, &surfels_, &triangles_),
-      render_window_(render_window) {
+    int regularization_frame_window_size)
+    // const shared_ptr<SurfelMeshingRenderWindow>& render_window)
+    : octree_(max_surfels_per_node, &surfels_, &triangles_) {
+    //  render_window_(render_window) {
   cos_max_angle_between_normals_ = cos(max_angle_between_normals);
   min_triangle_angle_ = min_triangle_angle;
   max_triangle_angle_ = max_triangle_angle;
@@ -184,6 +183,10 @@ SurfelMeshing::SurfelMeshing(
   fronts_sharing_edge_counter_ = 0;
   holes_closed_counter_ = 0;
   connected_to_surfel_without_suitable_front_counter_ = 0;
+}
+
+void SurfelMeshing::setWindow(const shared_ptr<SurfelMeshingRenderWindow>& render_window){
+  render_window_ = render_window; 
 }
 
 void SurfelMeshing::IntegrateCUDABuffers(
@@ -220,8 +223,13 @@ void SurfelMeshing::IntegrateCUDABuffers(
       Vec3f new_position(buffer.surfel_x_buffer[surfel_index],
                          buffer.surfel_y_buffer[surfel_index],
                          buffer.surfel_z_buffer[surfel_index]);
+      // Vec3f new_color(buffer.surfel_rgb_buffer[3 * surfel_index + 0],
+      //                    buffer.surfel_rgb_buffer[3 * surfel_index + 1],
+      //                    buffer.surfel_rgb_buffer[3 * surfel_index + 2]);
+      Vec3f new_color(255, 255, 255); 
       octree_.MoveSurfel(surfel_index, surfel, new_position);
       surfel->SetPosition(new_position);
+      surfel->SetColor(new_color); /////////
       
       // Only perform meshing / remeshing if the surfel was updated or regularized.
       // Notably, do not mesh / remesh if the surfel was moved only due to a loop closure.
@@ -255,7 +263,7 @@ void SurfelMeshing::IntegrateCUDABuffers(
   // Resize the buffers if necessary. Make sure that if the buffers are resized
   // they are resized by large steps, as this can be very slow.
   if (surfels_.capacity() < buffer.surfel_count) {
-    constexpr usize kMinSurfelReserveCount = 3000000;
+    constexpr usize kMinSurfelReserveCount = 3300000;
     surfels_.reserve(std::max(kMinSurfelReserveCount, 2 * buffer.surfel_count));
     triangles_.reserve(2.1f * surfels_.capacity());
   }
@@ -268,6 +276,13 @@ void SurfelMeshing::IntegrateCUDABuffers(
         Vec3f(buffer.surfel_x_buffer[surfel_index],
               buffer.surfel_y_buffer[surfel_index],
               buffer.surfel_z_buffer[surfel_index]),
+        // Vec3f(buffer.surfel_color_r_buffer[surfel_index],
+        //       buffer.surfel_color_g_buffer[surfel_index],
+        //       buffer.surfel_color_b_buffer[surfel_index]),
+        Vec3f(255, 255, 255), 
+        // Vec3f(buffer.surfel_rgb_buffer[3 * surfel_index + 0],
+        //         buffer.surfel_rgb_buffer[3 * surfel_index + 1],
+        //         buffer.surfel_rgb_buffer[3 * surfel_index + 2]),
         buffer.surfel_radius_squared_buffer[surfel_index],
         Vec3f(buffer.surfel_normal_x_buffer[surfel_index],
               buffer.surfel_normal_y_buffer[surfel_index],
@@ -1684,7 +1699,7 @@ continue_meshing:;
       ConvertToMesh3fCu8(visualization_mesh.get());
       
       shared_ptr<Point3fCloud> visualization_cloud(new Point3fCloud());
-      ConvertToPoint3fCloud(visualization_cloud.get());
+      ConvertToPoint3fCloud_position(visualization_cloud.get());
       
       shared_ptr<Point3fC3u8Cloud> visualization_cloud_2(new Point3fC3u8Cloud(visualization_cloud->size()));
       for (usize i = 0; i < visualization_cloud->size(); ++ i) {
@@ -2804,18 +2819,21 @@ void SurfelMeshing::ResetSurfelToFree(u32 surfel_index) {
   surfel->SetCanBeReset(false);
 }
 
-void SurfelMeshing::ConvertToPoint3fCloud(Point3fCloud* output) {
-  output->Resize(surfels_.size() - merged_surfel_count_);
+void SurfelMeshing::ConvertToPoint3fCloud_position(Point3fCloud* pcd) {
+  pcd->Resize(surfels_.size() - merged_surfel_count_);
+  ////////////////////////////
+  std::cerr << "surfel size / merged: " << surfels_.size() << ", " << merged_surfel_count_ << std::endl; 
+  
   usize index = 0;
   for (usize i = 0, size = surfels_.size(); i < size; ++ i) {
     const Surfel& surfel = surfels_[i];
     if (surfel.node() == nullptr) {
       continue;
     }
-    (*output)[index] = Point3f(surfel.position());
+    (*pcd)[index] = Point3f(surfel.position());
     ++ index;
   }
-  CHECK_EQ(index, output->size());
+  CHECK_EQ(index, pcd->size());
 }
 
 void SurfelMeshing::ConvertToMesh3fCu8(Mesh3fCu8* output, bool indices_only) {
@@ -2836,7 +2854,7 @@ void SurfelMeshing::ConvertToMesh3fCu8(Mesh3fCu8* output, bool indices_only) {
     // Vertices.
     if (!indices_only) {
       shared_ptr<Point3fCloud> visualization_cloud(new Point3fCloud());
-      ConvertToPoint3fCloud(visualization_cloud.get());
+      ConvertToPoint3fCloud_position(visualization_cloud.get());
       
       output->vertices_mutable()->reset(new Point3fC3u8Cloud(visualization_cloud->size()));
       for (usize i = 0; i < visualization_cloud->size(); ++ i) {
